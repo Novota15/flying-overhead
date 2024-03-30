@@ -1,8 +1,13 @@
+body {
+    font-family: Arial, sans-serif; /* Ensures a consistent font is used */
+}
+
 h1 {
     border: 2px #eee solid;
     color: brown;
     text-align: center;
     padding: 10px;
+    margin-top: 20px; /* Adds spacing to the top of the page */
 }
   
 h3 {
@@ -12,18 +17,43 @@ h3 {
 }
 
 td, th {
-border: 1px solid #ddd;
-padding: 8px;
+    border: 1px solid #ddd;
+    padding: 8px;
 }
 
-tr:nth-child(even){background-color: #f2f2f2;}
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
 
-tr:hover {background-color: #ddd;}
+tr:hover {
+    background-color: #ddd;
+}
 
 th {
-padding-top: 12px;
-padding-bottom: 12px;
-text-align: left;
-background-color: #04AA6D;
-color: white;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #04AA6D;
+    color: white;
+}
+
+/* Specific style for the map container */
+#map {
+    height: 400px; /* Ensures the map has a height if it's not defined elsewhere */
+    margin-bottom: 20px; /* Adds some space below the map */
+}
+
+/* Adds some padding around the body content for better spacing */
+.container {
+    padding-top: 20px;
+}
+
+/* Style for mute sound switch and label for better alignment and spacing */
+.custom-control {
+    display: block;
+    margin-top: 20px;
+}
+
+.custom-control-label {
+    margin-left: 10px;
 }

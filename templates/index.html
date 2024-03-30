@@ -1,36 +1,59 @@
 {% extends 'base.html' %}
 
-{% block content %}
-    <h1>{% block title %} Local flight tracker {% endblock %}</h1>
+{% block head %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<style>
+    body { padding-top: 20px; }
+    #map { height: 400px; margin-bottom: 20px; }
+    #flight_table, #column_keys { margin-top: 20px; }
+    .alert-radius { margin-top: 10px; margin-bottom: 20px; }
+    /* Additional styles for table */
+    .table-wrapper {
+        overflow-x: auto; /* Enables horizontal scrolling for smaller screens */
+    }
+</style>
+{% endblock %}
 
-<div id="location_text">
-<p>Location determined by your IP -- not as accurate</p>
+{% block content %}
+<div class="container">
+    <h1 class="display-4 text-center">{% block title %}Local Flight Tracker{% endblock %}</h1>
+
+    <div class="alert alert-info alert-radius" role="alert">
+        <p>Location determined by your IP — not as accurate.</p>
+    </div>
+
+    <p class="text-muted">Audio alert given whenever a plane is within a radius of {{ overhead_radius | safe }} miles (roughly the area highlighted).</p>
+
+    <div id="map"></div>
+
+    <div class="custom-control custom-switch mt-3">
+        <input type="checkbox" class="custom-control-input" id="mutesound" name="mutesound" value="Muted" checked>
+        <label class="custom-control-label" for="mutesound">Mute sound</label>
+    </div>
+
+    <h3 class="mt-4">Flights</h3>
+    <p>All planes within {{ pm_miles | safe }} miles. Last queried </p>
+    <div class="table-wrapper">
+        <div id="flight_table" class="table-responsive">{{ table | safe }}</div>
+    </div>
+
+    <h3>Column keys</h3>
+    <div id="column_keys" class="table-responsive">{{ column_keys | safe }}</div>
+
+    <audio muted src="static/media/planeoverhead.mp3" type="audio/mp3" id="planesound">
+        Your browser does not support the audio tag.
+    </audio> 
 </div>
 
-Audio alert given whenever plane within a radius of {{ overhead_radius | safe }} miles (roughly the area highlighted).
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-<div id="map" style="height: 400px"></div>
-
-<form>
-<input type="checkbox" id="mutesound" name="mutesound" value="Muted" checked>
-<label for="mutesound">Mute sound</label>
-</form>
-
-<h3>Flights</h3>
-
-All planes within {{ pm_miles | safe }} miles. Last queried 
-
-<div id="flight_table">{{ table | safe }}</div>
-
-<h3>Column keys</h3> 
-
-{{ column_keys | safe }}
-   
-<audio muted src="static/media/planeoverhead.mp3" type="audio/mp3" id="planesound">
-    Your browser does not support the audio tag.
-</audio> 
-    
 <script>
+    $(document).ready(function() {
+        // Move the initMap function or its call inside this block
+        initMap();  
+    });
 
     function play_sound(soundObj) {
         var sound = document.getElementById(soundObj);
@@ -141,7 +164,8 @@ All planes within {{ pm_miles | safe }} miles. Last queried
 
     }
     
-    initMap();
+    // initMap();  
+
 
 </script>
 

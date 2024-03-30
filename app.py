@@ -3,7 +3,7 @@ import requests
 import pandas as pd
 import numpy as np
 
-from private_keys import IPSTACK_KEY, MAPBOX_KEY
+from private_keys_template import IPSTACK_KEY, MAPBOX_KEY
 
 app = Flask(__name__)
 app.flights = pd.DataFrame({'Distance': []})
@@ -112,14 +112,14 @@ def distance_in_miles(lat1, lon1, lat2, lon2):
     d = EARTH_RADIUS*c;            # in meters
     return d/1600                  # convert to miles
 
-def get_flights(location = None):
+def get_flights(location=None):
     df, (browser_lat, browser_long) = get_flights_opensky(location)
-    #Add distance from current position as column
+    # Add distance from current position as column
     lats = df['Latitude']
     longs = df['Longitude']
-    distances = [distance_in_miles(la, lo, browser_lat, browser_long) for la,lo in zip(lats, longs)]
+    distances = [distance_in_miles(la, lo, browser_lat, browser_long) for la, lo in zip(lats, longs)]
     df['Distance'] = distances
-    df = df[df['Distance'] < PM_MILES] 
+    df = df[df['Distance'] < PM_MILES]
     return df, (browser_lat, browser_long)
 
 @app.route('/')
@@ -127,15 +127,18 @@ def index():
     flights, location = get_flights()
     app.flights = flights
     app.location = location
+    # Update the table to include Bootstrap classes
+    table_html = flights.to_html(classes=["table", "table-striped", "table-hover", "table-sm"], border=0, index=False)
+    column_keys_html = column_keys.to_html(classes=["table", "table-sm"], border=0)
     return render_template('index.html', 
-                           table = flights.to_html(), 
-                           location = location,
-                           column_keys = column_keys.to_html(), 
-                           pm_miles = PM_MILES,
-                           update_interval = UPDATE_INTERVAL,
-                           default_location = DEFAULT_LOCATION, 
-                           overhead_radius = OVERHEAD_RADIUS, 
-                           mapbox_key = MAPBOX_KEY)
+                           table=table_html, 
+                           location=location,
+                           column_keys=column_keys_html, 
+                           pm_miles=PM_MILES,
+                           update_interval=UPDATE_INTERVAL,
+                           default_location=DEFAULT_LOCATION, 
+                           overhead_radius=OVERHEAD_RADIUS, 
+                           mapbox_key=MAPBOX_KEY)
 
 @app.route('/flights')
 def flights():
@@ -156,3 +159,6 @@ def check_overhead():
         is_overhead = True
     min_distance = np.min(app.flights.Distance)
     return {'overhead': is_overhead, 'min_dist': min_distance}
+
+if __name__ == '__main__':
+    app.run()
