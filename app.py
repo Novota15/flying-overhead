@@ -12,9 +12,9 @@ HEADERS = {'Content-Type': 'application/json'}
 OPENSKY_URL = 'https://opensky-network.org/api/states/all'
 IPSTACK_URL = 'http://api.ipstack.com/check'
 
-PM_MILES = 50                          # flight search radius for the table
+PM_MILES = 1500                          # flight search radius for the table
 UPDATE_INTERVAL = 5000                 # update webpage this many milliseconds
-DEFAULT_LOCATION = [51.505, -0.09]     # London
+DEFAULT_LOCATION = [40.015, 105.270] # Boulder, CO
 OVERHEAD_RADIUS = 4                    # alert when plane is within this distance
 EARTH_RADIUS = 6371e3                  # radius of earth, in metres
 
@@ -64,6 +64,7 @@ def get_location():
     return lat, long
 
 def get_flights_opensky(location = None):
+    print("getting flights")
 
     if location is None:
         #If location data wasn't pulled from the browser, then just use IP (not as accurate)
@@ -82,11 +83,14 @@ def get_flights_opensky(location = None):
           'lamax': lat+lat_pm,
           'lomax': long+lng_pm
           }
+    print(params)
 
     #Get planes from open sky API    
     response = requests.get(OPENSKY_URL, params=params, headers=HEADERS)
+    print(response)
     assert response.status_code == 200
     states = response.json()['states']
+    print(states)
     if hasattr(states, '__len__'):
         if len(states[0]) != 18:
             print(f"{len(states[0])} columns returned, generally 18 columns expected from OpenSky REST API")
@@ -97,6 +101,7 @@ def get_flights_opensky(location = None):
     df = df[select_col_names]
     df = df.rename(columns = renamer)
     df = df.set_index('Callsign')
+    print(df)
     return df, (lat, long)
 
 def distance_in_miles(lat1, lon1, lat2, lon2):
